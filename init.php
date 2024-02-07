@@ -39,3 +39,4 @@ register_deactivation_hook(__FILE__, 'vendor_amrod_bd_table_remove');
 
 // Including requirements files
 require_once VENDOR_PLUGIN_PATH . '/inc/vendor_amrod_db-table.php';
+require_once VENDOR_PLUGIN_PATH . '/inc/vendor_amrod_insert_db.php';
