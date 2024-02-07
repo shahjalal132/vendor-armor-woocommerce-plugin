@@ -29,40 +29,32 @@ function product_insert_woocommerce() {
 
     // WooCommerce store information
     $website_url     = home_url();
-    $consumer_key    = 'ck_b38274103f71580c80b5fe2a268451152a75e546';
-    $consumer_secret = 'cs_4105c00f5c8bc420039a3c6f0faa02054f5974fd';
+    $consumer_key    = 'ck_43fc16f5ebb0dfdde9bc2d9d5abd7615170d5b3e';
+    $consumer_secret = 'cs_2f85757eec5b1c7b482855005351e0c47bca9dcb';
 
     foreach ( $products as $product ) {
-
+        
+        $product_data = $product->operation_value;
+        
+        $product_data = json_decode($product_data);
+        // echo "<pre>";
+        // print_r($product_data);
+        // echo "</pre>";
+        // die();
         // Retrieve product data
-        $p_id                = $product->id;
-        $fournisseur         = $product->supplier;
-        $product_category    = $product->product_category;
-        $id_bigbuy           = $product->id_bigbuy;
-        $Category_code       = $product->category_code;
-        $product_name        = $product->product_name;
-        $attributes1         = $product->attributes1;
-        $attributes2         = $product->attributes2;
-        $values1             = $product->values1;
-        $values2             = $product->values2;
-        $product_description = $product->product_description;
-        $benefices           = $product->benefices;
-        $testimonial         = $product->testimonial;
-        $claim_1             = $product->claim_1;
-        $meta_description    = $product->meta_description;
-        $seo_title           = $product->seo_title;
-        $brand               = $product->brand;
-        $feature             = $product->feature;
-        $EAN                 = $product->EAN;
-        $stock               = $product->stock;
+        
+        $product_name = $product_data->productName;
+        $description = $product_data->description;
+        $inventory = $product_data->inventoryType;
+        $promotion = $product_data->promotion;
+        $full_Brands = $product_data->fullBrandingGuide;
+        $images = $product_data->images;
+        $variants = $product_data->variants;
+        $branding_templates = $product_data->brandingTemplates;
+        $minimum = $product_data->minimum;
+        $maximum = $product_data->maximum;
 
-        //Get product price
-        $regular_price = $product->product_price;
-        $sale_price    = $product->product_pvp;
-
-        // product images
-        $image_url_string = $product->image_urls;
-        $image_url_array  = explode( ',', $image_url_string );
+        
 
         // Set up the API client with WooCommerce store URL and credentials
         $client = new Client(

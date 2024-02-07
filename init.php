@@ -69,3 +69,4 @@ require_once VENDOR_PLUGIN_PATH . '/inc/sync_branding_departments_db.php';
 require_once VENDOR_PLUGIN_PATH . '/inc/vendor_amrod_brandign_price_db.php';
 require_once VENDOR_PLUGIN_PATH . '/inc/vendor_amrod_price_db.php';
 require_once VENDOR_PLUGIN_PATH . '/inc/vendor_amrod_brands_db.php';
+require_once VENDOR_PLUGIN_PATH . '/inc/vendor_amrod_insert_product_woocommerce.php';
