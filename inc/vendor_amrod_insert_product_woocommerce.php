@@ -66,6 +66,15 @@ function product_insert_woocommerce()
             $stock_stock = $stock_data->stock;
         }
 
+        foreach ($category as $cat) {
+            $category_data = $cat->operation_value;
+            // convert json to array
+            $category_data = json_decode($category_data);
+           $parent_category = $category_data->categoryName;
+           $parent_categoryCode = $category_data->categoryCode;
+           $category_order = $category_data->order;
+           $sub_categories = $category_data->children;
+        }
 
         // Set up the API client with WooCommerce store URL and credentials
         $client = new Client(
