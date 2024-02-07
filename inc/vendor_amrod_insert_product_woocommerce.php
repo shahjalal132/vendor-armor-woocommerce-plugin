@@ -19,7 +19,13 @@ function product_insert_woocommerce() {
     $branding_price_table_name = $wpdb->prefix . 'sync_branding_price';
 
     // Retrieve pending products from the database
-    $products = $wpdb->get_results( "SELECT * FROM $table_name LIMIT 1" );
+    $products = $wpdb->get_results( "SELECT * FROM $product_table_name WHERE status = 'pending' LIMIT 1" );
+    $stocks = $wpdb->get_results( "SELECT * FROM $stock_table_name  LIMIT 1" );
+    $category = $wpdb->get_results( "SELECT * FROM $category_table_name  LIMIT 1" );
+    $brand = $wpdb->get_results( "SELECT * FROM $brand_table_name  LIMIT 1" );
+    $price = $wpdb->get_results( "SELECT * FROM $price_table_name  LIMIT 1" );
+    $branding_db = $wpdb->get_results( "SELECT * FROM $branding_dp_table_name  LIMIT 1" );
+    $branding_price = $wpdb->get_results( "SELECT * FROM $branding_price_table_name  LIMIT 1" );
 
     // WooCommerce store information
     $website_url     = home_url();
