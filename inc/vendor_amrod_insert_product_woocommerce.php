@@ -25,7 +25,7 @@ function product_insert_woocommerce()
     $stocks = $wpdb->get_results("SELECT * FROM $stock_table_name  LIMIT 1");
     $category = $wpdb->get_results("SELECT * FROM $category_table_name  LIMIT 1");
     $brand = $wpdb->get_results("SELECT * FROM $brand_table_name  LIMIT 1");
-    $price = $wpdb->get_results("SELECT * FROM $price_table_name  LIMIT 1");
+    $prices = $wpdb->get_results("SELECT * FROM $price_table_name  LIMIT 1");
     $branding_db = $wpdb->get_results("SELECT * FROM $branding_dp_table_name  LIMIT 1");
     $branding_price = $wpdb->get_results("SELECT * FROM $branding_price_table_name  LIMIT 1");
 
@@ -46,11 +46,52 @@ function product_insert_woocommerce()
         // Retrieve product data
 
         $product_name = $product_data->productName;
+        $product_code = $product_data->simpleCode;
+        $sku = $product_code;
         $description = $product_data->description;
         $inventory = $product_data->inventoryType;
         $promotion = $product_data->promotion;
         $full_Brands = $product_data->fullBrandingGuide;
         $images = $product_data->images;
+
+        // echo '<pre>';
+        // print_r($images);
+        // die();
+
+        // get image url
+        foreach ($images as $image) {
+            $image_data = $image->urls;
+            $image_url_j = $image_data[0]->url;
+
+            // echo '<pre>';
+            // print_r($image_data);
+            // die();
+
+            // get image url
+            // foreach ($image_data as $image_url) {
+            //     $image_url = $image_url->url . ',';
+            // }
+        }
+
+        //   var_dump($image_url);
+        // die();
+
+        // convert image strong to array
+        // $images_urls = explode(',', $image_url);
+
+        // concat , with image url
+        $image_url_j = $image_url_j . ',';
+        
+        // convert image url to array
+        $images_urls = explode(',', $image_url_j);
+
+        // echo '<pre>';
+        // print_r($images_urls);
+        // die();
+
+        // var_dump($images_urls);
+        // die();
+
         $variants = $product_data->variants;
         $branding_templates = $product_data->brandingTemplates;
         $minimum = $product_data->minimum;
@@ -70,10 +111,23 @@ function product_insert_woocommerce()
             $category_data = $cat->operation_value;
             // convert json to array
             $category_data = json_decode($category_data);
-           $parent_category = $category_data->categoryName;
-           $parent_categoryCode = $category_data->categoryCode;
-           $category_order = $category_data->order;
-           $sub_categories = $category_data->children;
+            $parent_category = $category_data->categoryName;
+            $parent_categoryCode = $category_data->categoryCode;
+            $category_order = $category_data->order;
+            $sub_categories = $category_data->children;
+        }
+
+        foreach ($brand as $brand) {
+            $brand_data = $brand->operation_value;
+            $brand_data = json_decode($brand_data);
+        }
+
+        foreach ($prices as $price) {
+            $price_data = $price->operation_value;
+            $price_data = json_decode($price_data);
+            // $simpl_code = $price_data->simpleCode;
+            $full_code = $price_data->fullCode;
+            $product_price = $price_data->price;
         }
 
         // Set up the API client with WooCommerce store URL and credentials
@@ -92,7 +146,7 @@ function product_insert_woocommerce()
             'meta_query' => array(
                 array(
                     'key'     => '_sku',
-                    'value'   => $id_bigbuy,
+                    'value'   => $sku,
                     'compare' => '=',
                 ),
             ),
@@ -107,12 +161,19 @@ function product_insert_woocommerce()
             // get product id
             $product_id = get_the_ID();
 
+            // Update the status of the processed product in your database
+            $wpdb->update(
+                $product_table_name,
+                ['status' => 'completed'],
+                ['id' => $product->id]
+            );
+
             // Update the product  if already exists
             $product_data = [
                 'name'        => $product_name,
-                'sku'         => $id_bigbuy,
+                'sku'         => $sku,
                 'type'        => 'simple',
-                'description' => $product_description,
+                'description' => $description,
                 'attributes'  => [
                     [
                         'name'      => 'Dimensions',
@@ -129,9 +190,9 @@ function product_insert_woocommerce()
             // Create a new product if not exists
             $product_data = [
                 'name'        => $product_name,
-                'sku'         => $id_bigbuy,
+                'sku'         => $sku,
                 'type'        => 'simple',
-                'description' => $product_description,
+                'description' => $description,
                 'attributes'  => [
                     [
                         'name'      => 'Dimensions',
@@ -145,23 +206,22 @@ function product_insert_woocommerce()
             $product    = $client->post('products', $product_data);
             $product_id = $product->id;
 
+            // Set product categories
+            wp_set_object_terms( $product_id, $parent_category, 'product_cat' );
+
             // Set product information
             wp_set_object_terms($product_id, 'simple', 'product_type');
             update_post_meta($product_id, '_visibility', 'visible');
             update_post_meta($product_id, '_stock_status', 'instock');
-            update_post_meta($product_id, '_regular_price', $regular_price);
-            update_post_meta($product_id, '_sale_price', $sale_price);
-            update_post_meta($product_id, '_price', $sale_price);
-            update_post_meta($product_id, '_bigbuy-testimonial', $testimonial);
-            update_post_meta($product_id, '_claim_1', $claim_1);
-            update_post_meta($product_id, '_benefices', $benefices);
-            update_post_meta($product_id, '_seo_title', $seo_title);
+            // update_post_meta($product_id, '_regular_price', $regular_price);
+            update_post_meta($product_id, '_sale_price', $product_price);
+            update_post_meta($product_id, '_price', $product_price);
 
             // Update product meta data in WordPress
-            update_post_meta($product_id, '_stock', $stock);
+            update_post_meta($product_id, '_stock', $stock_stock);
 
             // display out of stock message if stock is 0
-            if ($stock <= 0) {
+            if ($stock_stock <= 0) {
                 update_post_meta($product_id, '_stock_status', 'outofstock');
             } else {
                 update_post_meta($product_id, '_stock_status', 'instock');
@@ -170,7 +230,11 @@ function product_insert_woocommerce()
 
 
             // set product gallery images
-            foreach ($image_url_array as $image_url) {
+            foreach ($images_urls as $image_url) {
+
+                // echo '<pre>';
+                // print_r($image_url);
+                // die();
 
                 // Extract image name
                 $image_name = basename($image_url);
@@ -206,6 +270,13 @@ function product_insert_woocommerce()
 
                     set_post_thumbnail($product_id, $attach_id);
                 }
+
+                // Update the status of the processed product in your database
+                $wpdb->update(
+                    $product_table_name,
+                    ['status' => 'completed'],
+                    ['id' => $product->id]
+                );
             }
 
             return "Product Inserted Successfully";
