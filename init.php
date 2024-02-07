@@ -30,13 +30,27 @@ if (!defined('VENDOR_PLUGIN_URI')) {
 
 // Create wp_sync_products db table when plugin activate
 register_activation_hook(__FILE__, 'vendor_amrod_bd_table_create');
-
 //deactivaton hook
 register_deactivation_hook(__FILE__, 'vendor_amrod_bd_table_remove');
-
-
-
+// Create wp_sync_products db table when plugin activate
+register_activation_hook(__FILE__, 'vendor_stock_bd_table_create');
+//deactivaton hook
+register_deactivation_hook(__FILE__, 'vendor_stock_bd_table_remove');
+//category table
+register_activation_hook(__FILE__, 'sync_categories_table_creation');
+//category table
+register_deactivation_hook(__FILE__, 'sync_categories_table_deletion');
+//brand table
+register_activation_hook(__FILE__, 'sync_brand_table_creation');
+//brand table
+register_deactivation_hook(__FILE__, 'sync_brand_table_deletion');
+//price table
+register_activation_hook(__FILE__, 'sync_price_table_creation');
+//price table
+register_deactivation_hook(__FILE__, 'sync_price_table_deletion');
 
 // Including requirements files
 require_once VENDOR_PLUGIN_PATH . '/inc/vendor_amrod_db-table.php';
 require_once VENDOR_PLUGIN_PATH . '/inc/vendor_amrod_insert_db.php';
+require_once VENDOR_PLUGIN_PATH . '/inc/vendor_amrod_stock_db.php';
+require_once VENDOR_PLUGIN_PATH . '/inc/vendor_amrod_category_insert_db.php';
