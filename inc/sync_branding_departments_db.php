@@ -50,6 +50,6 @@ function get_branding_departments_bd_callback(){
     return ob_get_clean();
 }
 
-add_shortcode('get_branding_departments', 'get_branding_departments_db_callback');
+add_shortcode('get_branding_departments', 'get_branding_departments_bd_callback');
 
 

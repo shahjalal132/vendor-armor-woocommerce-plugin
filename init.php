@@ -65,3 +65,7 @@ require_once VENDOR_PLUGIN_PATH . '/inc/vendor_amrod_db-table.php';
 require_once VENDOR_PLUGIN_PATH . '/inc/vendor_amrod_insert_db.php';
 require_once VENDOR_PLUGIN_PATH . '/inc/vendor_amrod_stock_db.php';
 require_once VENDOR_PLUGIN_PATH . '/inc/vendor_amrod_category_insert_db.php';
+require_once VENDOR_PLUGIN_PATH . '/inc/sync_branding_departments_db.php';
+require_once VENDOR_PLUGIN_PATH . '/inc/vendor_amrod_brandign_price_db.php';
+require_once VENDOR_PLUGIN_PATH . '/inc/vendor_amrod_price_db.php';
+require_once VENDOR_PLUGIN_PATH . '/inc/vendor_amrod_brands_db.php';
