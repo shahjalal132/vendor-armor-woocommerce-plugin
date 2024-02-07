@@ -48,6 +48,17 @@ register_deactivation_hook(__FILE__, 'sync_brand_table_deletion');
 register_activation_hook(__FILE__, 'sync_price_table_creation');
 //price table
 register_deactivation_hook(__FILE__, 'sync_price_table_deletion');
+//sync branding department table
+register_activation_hook(__FILE__, 'sync_branding_departments_table_create');
+//sync branding department table
+register_deactivation_hook(__FILE__, 'sync_branding_departments_table_remove');
+//sync branding price table
+register_activation_hook(__FILE__, 'sync_branding_price_table_create');
+//sync branding price table
+register_deactivation_hook(__FILE__, 'sync_branding_price_table_remove');
+
+
+
 
 // Including requirements files
 require_once VENDOR_PLUGIN_PATH . '/inc/vendor_amrod_db-table.php';
