@@ -1,4 +1,5 @@
 <?php
+
 // Include necessary files
 require_once VENDOR_PLUGIN_PATH . '/vendor/autoload.php';
 
@@ -35,24 +36,31 @@ function product_insert_woocommerce() {
 
     foreach ( $products as $product ) {
 
+        // get product data
         $product_data = $product->operation_value;
 
+        // convert json to array
         $product_data = json_decode( $product_data );
-        
+
         // echo "<pre>";
         // print_r($product_data);
         // echo "</pre>";
         // die();
-        // Retrieve product data
 
-        $product_name = $product_data->productName;
-        $product_code = $product_data->simpleCode;
-        $sku          = $product_code;
-        $description  = $product_data->description;
-        $inventory    = $product_data->inventoryType;
-        $promotion    = $product_data->promotion;
-        $full_Brands  = $product_data->fullBrandingGuide;
-        $images       = $product_data->images;
+        // Retrieve products information
+        $product_name       = $product_data->productName;
+        $product_code       = $product_data->simpleCode;
+        $sku                = $product_code;
+        $description        = $product_data->description;
+        $inventory          = $product_data->inventoryType;
+        $promotion          = $product_data->promotion;
+        $full_Brands        = $product_data->fullBrandingGuide;
+        $variants           = $product_data->variants;
+        $branding_templates = $product_data->brandingTemplates;
+        $minimum            = $product_data->minimum;
+        $maximum            = $product_data->maximum;
+
+        $images = $product_data->images;
 
         // echo '<pre>';
         // print_r($images);
@@ -92,25 +100,30 @@ function product_insert_woocommerce() {
         // var_dump($images_urls);
         // die();
 
-        $variants           = $product_data->variants;
-        $branding_templates = $product_data->brandingTemplates;
-        $minimum            = $product_data->minimum;
-        $maximum            = $product_data->maximum;
-
 
         foreach ( $stocks as $stock ) {
+
+            // get stock data
             $stock_data = $stock->operation_value;
+
+            // convert json to array
             $stock_data = json_decode( $stock_data );
 
+            // retrieve stock information
             $simpleCode_stock = $stock_data->simpleCode;
             $fullCode_stock   = $stock_data->fullCode;
             $stock_stock      = $stock_data->stock;
         }
 
         foreach ( $category as $cat ) {
+
+            // get category data
             $category_data = $cat->operation_value;
+
             // convert json to array
             $category_data       = json_decode( $category_data );
+
+            // retrieve category information
             $parent_category     = $category_data->categoryName;
             $parent_categoryCode = $category_data->categoryCode;
             $category_order      = $category_data->order;
@@ -118,13 +131,27 @@ function product_insert_woocommerce() {
         }
 
         foreach ( $brand as $brand ) {
+
+            // get brand data
             $brand_data = $brand->operation_value;
+
+            // convert json to array
             $brand_data = json_decode( $brand_data );
+
+            // echo '<pre>';
+            // print_r( $brand_data );
+            // die();
         }
 
         foreach ( $prices as $price ) {
+
+            // get price data
             $price_data = $price->operation_value;
+
+            // convert json to array
             $price_data = json_decode( $price_data );
+
+            // retrieve price information
             // $simpl_code = $price_data->simpleCode;
             $full_code     = $price_data->fullCode;
             $product_price = $price_data->price;
@@ -144,12 +171,12 @@ function product_insert_woocommerce() {
         $args = array(
             'post_type'  => 'product',
             'meta_query' => array(
-                    array(
-                        'key'     => '_sku',
-                        'value'   => $sku,
-                        'compare' => '=',
-                    ),
+                array(
+                    'key'     => '_sku',
+                    'value'   => $sku,
+                    'compare' => '=',
                 ),
+            ),
         );
 
         // Check if the product already exists
@@ -161,7 +188,7 @@ function product_insert_woocommerce() {
             // get product id
             $product_id = get_the_ID();
 
-            // Update the status of the processed product in your database
+            // Update the status of the processed product database
             $wpdb->update(
                 $product_table_name,
                 [ 'status' => 'completed' ],
@@ -175,12 +202,12 @@ function product_insert_woocommerce() {
                 'type'        => 'simple',
                 'description' => $description,
                 'attributes'  => [
-                        [
-                            'name'      => 'Dimensions',
-                            'visible'   => true,
-                            'variation' => true,
-                        ],
+                    [
+                        'name'      => 'Dimensions',
+                        'visible'   => true,
+                        'variation' => true,
                     ],
+                ],
             ];
 
             // update product
@@ -194,12 +221,12 @@ function product_insert_woocommerce() {
                 'type'        => 'simple',
                 'description' => $description,
                 'attributes'  => [
-                        [
-                            'name'      => 'Dimensions',
-                            'visible'   => true,
-                            'variation' => true,
-                        ],
+                    [
+                        'name'      => 'Dimensions',
+                        'visible'   => true,
+                        'variation' => true,
                     ],
+                ],
             ];
 
             // Create the product
