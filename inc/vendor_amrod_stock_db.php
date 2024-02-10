@@ -42,23 +42,24 @@ function get_stock_to_callback()
 
     $stocks       = json_decode($api_response, true);
 
-    echo '<pre>';
-    print_r( $stocks );
-    die();
-
     // Insert to database
     global $wpdb;
-    
+
     $table_name = $wpdb->prefix . 'sync_stocks';
     $wpdb->query("TRUNCATE TABLE $table_name");
 
     foreach ($stocks as $stock) {
-        $stock_json = json_encode($stock);
+
+        $simple_code = $stock['simpleCode'];
+        $full_code = $stock['fullCode'];
+        $stock = $stock['stock'];
+
         $wpdb->insert(
             $table_name,
             [
-                'operation_type'  => 'stock_create',
-                'operation_value' => $stock_json,
+                'simplecode'  => $simple_code,
+                'fullCode' => $full_code,
+                'stock' => $stock,
             ]
         );
     }
