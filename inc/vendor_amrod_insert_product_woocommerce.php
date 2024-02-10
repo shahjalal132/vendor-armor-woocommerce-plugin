@@ -70,10 +70,6 @@ function product_insert_woocommerce()
             $category_image = $category->image;
         }
 
-        // echo '<pre>';
-        // print_r($images);
-        // die();
-
         // Initialize an empty string to hold the URLs
         $urls = '';
 
@@ -86,47 +82,6 @@ function product_insert_woocommerce()
 
         // Remove the trailing comma and space
         $urls = rtrim($urls, ', ');
-
-        foreach ($stocks as $stock) {
-
-            // get stock data
-            $stock_data = $stock->operation_value;
-
-            // convert json to array
-            $stock_data = json_decode($stock_data);
-
-            // retrieve stock information
-            $simpleCode_stock = $stock_data->simpleCode;
-            $fullCode_stock   = $stock_data->fullCode;
-            $stock_stock      = $stock_data->stock;
-        }
-
-        foreach ($brand as $brand) {
-
-            // get brand data
-            $brand_data = $brand->operation_value;
-
-            // convert json to array
-            $brand_data = json_decode($brand_data);
-
-            // echo '<pre>';
-            // print_r( $brand_data );
-            // die();
-        }
-
-        foreach ($prices as $price) {
-
-            // get price data
-            $price_data = $price->operation_value;
-
-            // convert json to array
-            $price_data = json_decode($price_data);
-
-            // retrieve price information
-            // $simpl_code = $price_data->simpleCode;
-            $full_code     = $price_data->fullCode;
-            $product_price = $price_data->price;
-        }
 
         // Set up the API client with WooCommerce store URL and credentials
         $client = new Client(

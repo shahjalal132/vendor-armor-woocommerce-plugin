@@ -29,8 +29,18 @@ function get_price_api() {
 function get_price_to_callback() {
 
     ob_start();
+
+    // get api response
     $api_response = get_price_api();
+
+    $file_path = VENDOR_PLUGIN_PATH . '/uploads/price-data.json';
+
+    // put api response to json file
+    file_put_contents($file_path, $api_response);
+    die();
+
     $prices       = json_decode( $api_response, true );
+
     // Insert to database
     global $wpdb;
     $table_name = $wpdb->prefix . 'sync_price';
