@@ -23,6 +23,7 @@ function product_insert_woocommerce()
 
     // Retrieve pending products from the database
     $products       = $wpdb->get_results("SELECT * FROM $product_table_name WHERE status = 'pending' LIMIT 1");
+
     $category_db       = $wpdb->get_results("SELECT * FROM $category_table_name  LIMIT 1");
     $brand          = $wpdb->get_results("SELECT * FROM $brand_table_name  LIMIT 1");
     $branding_db    = $wpdb->get_results("SELECT * FROM $branding_dp_table_name  LIMIT 1");
@@ -40,11 +41,6 @@ function product_insert_woocommerce()
 
         // convert json to array
         $product_data = json_decode($product_data);
-
-        // echo "<pre>";
-        // print_r($product_data);
-        // echo "</pre>";
-        // die();
 
         // Retrieve products information
         $product_name       = $product_data->productName;
@@ -153,7 +149,7 @@ function product_insert_woocommerce()
             $client->put('products/' . $product_id, $product_data);
 
             return 'product already exists';
-            
+
         } else {
 
             // Create a new product if not exists
@@ -210,10 +206,6 @@ function product_insert_woocommerce()
 
             // set product gallery images
             foreach ($urls as $image_url) {
-
-                // echo '<pre>';
-                // print_r($image_url);
-                // die();
 
                 // Extract image name
                 $image_name = basename($image_url);
