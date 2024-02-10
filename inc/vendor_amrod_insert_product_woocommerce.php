@@ -23,10 +23,8 @@ function product_insert_woocommerce()
 
     // Retrieve pending products from the database
     $products       = $wpdb->get_results("SELECT * FROM $product_table_name WHERE status = 'pending' LIMIT 1");
-    $stocks         = $wpdb->get_results("SELECT * FROM $stock_table_name  LIMIT 1");
     $category_db       = $wpdb->get_results("SELECT * FROM $category_table_name  LIMIT 1");
     $brand          = $wpdb->get_results("SELECT * FROM $brand_table_name  LIMIT 1");
-    $prices         = $wpdb->get_results("SELECT * FROM $price_table_name  LIMIT 1");
     $branding_db    = $wpdb->get_results("SELECT * FROM $branding_dp_table_name  LIMIT 1");
     $branding_price = $wpdb->get_results("SELECT * FROM $branding_price_table_name  LIMIT 1");
 
@@ -82,6 +80,16 @@ function product_insert_woocommerce()
 
         // Remove the trailing comma and space
         $urls = rtrim($urls, ', ');
+
+        // get price data
+        $prices         = $wpdb->get_results("SELECT * FROM $price_table_name WHERE simpleCode = '$sku' LIMIT 1");
+
+        // get price
+        $price = $prices[0]->price;
+
+        // get stock data
+        $stocks         = $wpdb->get_results("SELECT * FROM $stock_table_name  LIMIT 1");
+        die();
 
         // Set up the API client with WooCommerce store URL and credentials
         $client = new Client(
@@ -167,23 +175,23 @@ function product_insert_woocommerce()
             update_post_meta($product_id, '_visibility', 'visible');
             update_post_meta($product_id, '_stock_status', 'instock');
             // update_post_meta($product_id, '_regular_price', $regular_price);
-            update_post_meta($product_id, '_sale_price', $product_price);
-            update_post_meta($product_id, '_price', $product_price);
+            update_post_meta($product_id, '_sale_price', $price);
+            update_post_meta($product_id, '_price', $price);
 
             // Update product meta data in WordPress
             update_post_meta($product_id, '_stock', $stock_stock);
 
             // display out of stock message if stock is 0
-            if ($stock_stock <= 0) {
+            /* if ($stock_stock <= 0) {
                 update_post_meta($product_id, '_stock_status', 'outofstock');
             } else {
                 update_post_meta($product_id, '_stock_status', 'instock');
             }
-            update_post_meta($product_id, '_manage_stock', 'yes');
+            update_post_meta($product_id, '_manage_stock', 'yes'); */
 
 
             // set product gallery images
-            foreach ($images_urls as $image_url) {
+            foreach ($urls as $image_url) {
 
                 // echo '<pre>';
                 // print_r($image_url);
