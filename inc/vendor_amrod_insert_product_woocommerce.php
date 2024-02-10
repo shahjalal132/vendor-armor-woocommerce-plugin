@@ -24,7 +24,7 @@ function product_insert_woocommerce()
     // Retrieve pending products from the database
     $products       = $wpdb->get_results("SELECT * FROM $product_table_name WHERE status = 'pending' LIMIT 1");
     $stocks         = $wpdb->get_results("SELECT * FROM $stock_table_name  LIMIT 1");
-    $category       = $wpdb->get_results("SELECT * FROM $category_table_name  LIMIT 1");
+    $category_db       = $wpdb->get_results("SELECT * FROM $category_table_name  LIMIT 1");
     $brand          = $wpdb->get_results("SELECT * FROM $brand_table_name  LIMIT 1");
     $prices         = $wpdb->get_results("SELECT * FROM $price_table_name  LIMIT 1");
     $branding_db    = $wpdb->get_results("SELECT * FROM $branding_dp_table_name  LIMIT 1");
@@ -71,43 +71,21 @@ function product_insert_woocommerce()
         }
 
         // echo '<pre>';
-        // print_r($categories);
+        // print_r($images);
         // die();
 
-        // get image url
-        foreach ($images as $image) {
-            $image_data  = $image->urls;
-            $image_url_j = $image_data[0]->url;
+        // Initialize an empty string to hold the URLs
+        $urls = '';
 
-            // echo '<pre>';
-            // print_r($image_data);
-            // die();
-
-            // get image url
-            // foreach ($image_data as $image_url) {
-            //     $image_url = $image_url->url . ',';
-            // }
+        // Loop through the array and concatenate the URLs with comma separator
+        foreach ($images as $object) {
+            foreach ($object->urls as $urlObj) {
+                $urls .= $urlObj->url . ', ';
+            }
         }
 
-        //   var_dump($image_url);
-        // die();
-
-        // convert image strong to array
-        // $images_urls = explode(',', $image_url);
-
-        // concat , with image url
-        $image_url_j = $image_url_j . ',';
-
-        // convert image url to array
-        $images_urls = explode(',', $image_url_j);
-
-        // echo '<pre>';
-        // print_r($images_urls);
-        // die();
-
-        // var_dump($images_urls);
-        // die();
-
+        // Remove the trailing comma and space
+        $urls = rtrim($urls, ', ');
 
         foreach ($stocks as $stock) {
 
