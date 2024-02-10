@@ -1,8 +1,7 @@
 <?php
 
 // Create wp_sync_category Table When Plugin Activated
-function vendor_amrod_bd_table_create()
-{
+function vendor_amrod_bd_table_create() {
 
     global $wpdb;
 
@@ -21,22 +20,20 @@ function vendor_amrod_bd_table_create()
     ) $charset_collate;";
 
     require_once ABSPATH . 'wp-admin/includes/upgrade.php';
-    dbDelta($sql);
+    dbDelta( $sql );
 }
 
 // Remove wp_sync_category Table when plugin deactivated
-function vendor_amrod_bd_table_remove()
-{
+function vendor_amrod_bd_table_remove() {
     global $wpdb;
 
     $table_name = $wpdb->prefix . 'sync_products';
     $sql        = "DROP TABLE IF EXISTS $table_name;";
-    $wpdb->query($sql);
+    $wpdb->query( $sql );
 }
 
-//stock tabel create
-function vendor_stock_bd_table_create()
-{
+//stock table create
+function vendor_stock_bd_table_create() {
     global $wpdb;
 
     $table_name      = $wpdb->prefix . 'sync_stocks';
@@ -53,17 +50,16 @@ function vendor_stock_bd_table_create()
     ) $charset_collate;";
 
     require_once ABSPATH . 'wp-admin/includes/upgrade.php';
-    dbDelta($sql);
+    dbDelta( $sql );
 }
 
 // Remove wp_sync_category Table when plugin deactivated
-function vendor_stock_bd_table_remove()
-{
+function vendor_stock_bd_table_remove() {
     global $wpdb;
 
     $table_name = $wpdb->prefix . 'sync_stocks';
     $sql        = "DROP TABLE IF EXISTS $table_name;";
-    $wpdb->query($sql);
+    $wpdb->query( $sql );
 }
 
 
@@ -174,7 +170,7 @@ function sync_price_table_deletion() {
     $table_name = $wpdb->prefix . 'sync_price';
 
     // SQL query to drop the table if it exists
-    $wpdb->query( "DROP TABLE IF EXISTS $table_name");
+    $wpdb->query( "DROP TABLE IF EXISTS $table_name" );
 }
 
 
@@ -212,7 +208,7 @@ function sync_branding_departments_table_remove() {
     $table_name = $wpdb->prefix . 'sync_branding_departments';
 
     // SQL query to drop the table if it exists
-    $wpdb->query( "DROP TABLE IF EXISTS $table_name");
+    $wpdb->query( "DROP TABLE IF EXISTS $table_name" );
 }
 
 function sync_branding_price_table_create() {
@@ -248,5 +244,5 @@ function sync_branding_price_table_remove() {
     $table_name = $wpdb->prefix . 'sync_branding_price';
 
     // SQL query to drop the table if it exists
-    $wpdb->query( "DROP TABLE IF EXISTS $table_name");
+    $wpdb->query( "DROP TABLE IF EXISTS $table_name" );
 }
