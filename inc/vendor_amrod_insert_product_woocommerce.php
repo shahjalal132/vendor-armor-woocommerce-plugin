@@ -85,6 +85,9 @@ function product_insert_woocommerce() {
         // get price
         $price = $prices[0]->price ?? null;
 
+        // increase 25% of the price
+        $price = $price * 1.25;
+
         // get stock data
         $stocks = $wpdb->get_results( "SELECT stock FROM $stock_table_name  WHERE simpleCode = '$sku' LIMIT 1" );
 
