@@ -6,8 +6,7 @@ require_once VENDOR_PLUGIN_PATH . '/vendor/autoload.php';
 use Automattic\WooCommerce\Client;
 
 // Function to insert products into WooCommerce
-function product_insert_woocommerce()
-{
+function product_insert_woocommerce() {
 
     // Get global $wpdb object
     global $wpdb;
@@ -22,7 +21,7 @@ function product_insert_woocommerce()
     $branding_price_table_name = $wpdb->prefix . 'sync_branding_price';
 
     // Retrieve pending products from the database
-    $products       = $wpdb->get_results("SELECT * FROM $product_table_name WHERE status = 'pending' LIMIT 1");
+    $products = $wpdb->get_results( "SELECT * FROM $product_table_name WHERE status = 'pending' LIMIT 1" );
 
     /* $category_db       = $wpdb->get_results("SELECT * FROM $category_table_name  LIMIT 1");
     $brand          = $wpdb->get_results("SELECT * FROM $brand_table_name  LIMIT 1");
@@ -34,13 +33,13 @@ function product_insert_woocommerce()
     $consumer_key    = 'ck_43fc16f5ebb0dfdde9bc2d9d5abd7615170d5b3e';
     $consumer_secret = 'cs_2f85757eec5b1c7b482855005351e0c47bca9dcb';
 
-    foreach ($products as $product) {
+    foreach ( $products as $product ) {
 
         // get product data
         $product_data = $product->operation_value;
 
         // convert json to array
-        $product_data = json_decode($product_data);
+        $product_data = json_decode( $product_data );
 
         // Retrieve products information
         $product_name       = $product_data->productName;
@@ -54,13 +53,13 @@ function product_insert_woocommerce()
         $branding_templates = $product_data->brandingTemplates;
         $minimum            = $product_data->minimum;
         $maximum            = $product_data->maximum;
-        $categories = $product_data->categories;
+        $categories         = $product_data->categories;
 
         $images = $product_data->images;
 
         // get category name and image from $categories array
-        foreach ($categories as $category) {
-            $category_name = $category->name;
+        foreach ( $categories as $category ) {
+            $category_name  = $category->name;
             $category_image = $category->image;
         }
 
@@ -68,26 +67,26 @@ function product_insert_woocommerce()
         $urls = '';
 
         // Loop through the array and concatenate the URLs with comma separator
-        foreach ($images as $object) {
-            foreach ($object->urls as $urlObj) {
+        foreach ( $images as $object ) {
+            foreach ( $object->urls as $urlObj ) {
                 $urls .= $urlObj->url . ', ';
             }
         }
 
         // Remove the trailing comma and space
-        $urls = rtrim($urls, ', ');
+        $urls = rtrim( $urls, ', ' );
 
         // convert $urls to array
-        $urls = explode(", ", $urls);
+        $urls = explode( ", ", $urls );
 
         // get price data
-        $prices         = $wpdb->get_results("SELECT * FROM $price_table_name WHERE simpleCode = '$sku' LIMIT 1");
+        $prices = $wpdb->get_results( "SELECT * FROM $price_table_name WHERE simpleCode = '$sku' LIMIT 1" );
 
         // get price
         $price = $prices[0]->price ?? null;
 
         // get stock data
-        $stocks         = $wpdb->get_results("SELECT stock FROM $stock_table_name  WHERE simpleCode = '$sku' LIMIT 1");
+        $stocks = $wpdb->get_results( "SELECT stock FROM $stock_table_name  WHERE simpleCode = '$sku' LIMIT 1" );
 
         // get stock
         $stock = $stocks[0]->stock ?? null;
@@ -106,18 +105,18 @@ function product_insert_woocommerce()
         $args = array(
             'post_type'  => 'product',
             'meta_query' => array(
-                array(
-                    'key'     => '_sku',
-                    'value'   => $sku,
-                    'compare' => '=',
+                    array(
+                        'key'     => '_sku',
+                        'value'   => $sku,
+                        'compare' => '=',
+                    ),
                 ),
-            ),
         );
 
         // Check if the product already exists
-        $existing_products = new WP_Query($args);
+        $existing_products = new WP_Query( $args );
 
-        if ($existing_products->have_posts()) {
+        if ( $existing_products->have_posts() ) {
             $existing_products->the_post();
 
             // get product id
@@ -126,8 +125,8 @@ function product_insert_woocommerce()
             // Update the status of the processed product database
             $wpdb->update(
                 $product_table_name,
-                ['status' => 'completed'],
-                ['id' => $product->id]
+                [ 'status' => 'completed' ],
+                [ 'id' => $product->id ]
             );
 
             // Update the product  if already exists
@@ -137,16 +136,16 @@ function product_insert_woocommerce()
                 'type'        => 'simple',
                 'description' => $description,
                 'attributes'  => [
-                    [
-                        'name'      => 'Dimensions',
-                        'visible'   => true,
-                        'variation' => true,
+                        [
+                            'name'      => 'Dimensions',
+                            'visible'   => true,
+                            'variation' => true,
+                        ],
                     ],
-                ],
             ];
 
             // update product
-            $client->put('products/' . $product_id, $product_data);
+            $client->put( 'products/' . $product_id, $product_data );
 
             return 'product already exists';
 
@@ -159,99 +158,99 @@ function product_insert_woocommerce()
                 'type'        => 'simple',
                 'description' => $description,
                 'attributes'  => [
-                    [
-                        'name'      => 'Dimensions',
-                        'visible'   => true,
-                        'variation' => true,
+                        [
+                            'name'      => 'Dimensions',
+                            'visible'   => true,
+                            'variation' => true,
+                        ],
                     ],
-                ],
             ];
 
             // Create the product
-            $product    = $client->post('products', $product_data);
+            $product    = $client->post( 'products', $product_data );
             $product_id = $product->id;
 
             // Set product categories
-            wp_set_object_terms($product_id, $category_name, 'product_cat');
+            wp_set_object_terms( $product_id, $category_name, 'product_cat' );
 
             // Set category image
-            $term = get_term_by('name', $category_name, 'product_cat');
-            if ($term && !is_wp_error($term)) {
+            $term = get_term_by( 'name', $category_name, 'product_cat' );
+            if ( $term && !is_wp_error( $term ) ) {
 
-                if (!empty($category_image)) {
-                    update_term_meta($term->term_id, 'thumbnail_id', attachment_url_to_postid($category_image));
+                if ( !empty( $category_image ) ) {
+                    update_term_meta( $term->term_id, 'thumbnail_id', attachment_url_to_postid( $category_image ) );
                 }
             }
 
 
             // Set product information
-            wp_set_object_terms($product_id, 'simple', 'product_type');
-            update_post_meta($product_id, '_visibility', 'visible');
-            update_post_meta($product_id, '_stock_status', 'instock');
+            wp_set_object_terms( $product_id, 'simple', 'product_type' );
+            update_post_meta( $product_id, '_visibility', 'visible' );
+            update_post_meta( $product_id, '_stock_status', 'instock' );
             // update_post_meta($product_id, '_regular_price', $regular_price);
-            update_post_meta($product_id, '_sale_price', $price);
-            update_post_meta($product_id, '_price', $price);
+            update_post_meta( $product_id, '_sale_price', $price );
+            update_post_meta( $product_id, '_price', $price );
 
             // Update product meta data in WordPress
-            update_post_meta($product_id, '_stock', $stock);
+            update_post_meta( $product_id, '_stock', $stock );
 
             // display out of stock message if stock is 0
-            if ($stock <= 0) {
-                update_post_meta($product_id, '_stock_status', 'outofstock');
+            if ( $stock <= 0 ) {
+                update_post_meta( $product_id, '_stock_status', 'outofstock' );
             } else {
-                update_post_meta($product_id, '_stock_status', 'instock');
+                update_post_meta( $product_id, '_stock_status', 'instock' );
             }
-            update_post_meta($product_id, '_manage_stock', 'yes');
+            update_post_meta( $product_id, '_manage_stock', 'yes' );
 
 
             // set product gallery images
-            foreach ($urls as $image_url) {
+            foreach ( $urls as $image_url ) {
 
                 // Extract image name
-                $image_name = basename($image_url);
+                $image_name = basename( $image_url );
                 // Get WordPress upload directory
                 $upload_dir = wp_upload_dir();
 
                 // Download the image from URL and save it to the upload directory
-                $image_data = file_get_contents($image_url);
+                $image_data = file_get_contents( $image_url );
 
-                if ($image_data !== false) {
+                if ( $image_data !== false ) {
                     $image_file = $upload_dir['path'] . '/' . $image_name;
-                    file_put_contents($image_file, $image_data);
+                    file_put_contents( $image_file, $image_data );
 
                     // Prepare image data to be attached to the product
                     $file_path = $upload_dir['path'] . '/' . $image_name;
-                    $file_name = basename($file_path);
+                    $file_name = basename( $file_path );
 
                     // Insert the image as an attachment
                     $attachment = [
-                        'post_mime_type' => mime_content_type($file_path),
-                        'post_title'     => preg_replace('/\.[^.]+$/', '', $file_name),
+                        'post_mime_type' => mime_content_type( $file_path ),
+                        'post_title'     => preg_replace( '/\.[^.]+$/', '', $file_name ),
                         'post_content'   => '',
                         'post_status'    => 'inherit',
                     ];
 
-                    $attach_id = wp_insert_attachment($attachment, $file_path, $product_id);
+                    $attach_id = wp_insert_attachment( $attachment, $file_path, $product_id );
 
                     // Add the image to the product gallery
-                    $gallery_ids   = get_post_meta($product_id, '_product_image_gallery', true);
-                    $gallery_ids   = explode(',', $gallery_ids);
+                    $gallery_ids   = get_post_meta( $product_id, '_product_image_gallery', true );
+                    $gallery_ids   = explode( ',', $gallery_ids );
                     $gallery_ids[] = $attach_id;
-                    update_post_meta($product_id, '_product_image_gallery', implode(',', $gallery_ids));
+                    update_post_meta( $product_id, '_product_image_gallery', implode( ',', $gallery_ids ) );
 
-                    set_post_thumbnail($product_id, $attach_id);
+                    set_post_thumbnail( $product_id, $attach_id );
                 }
             }
 
             // Update the status of the processed product in your database
             $wpdb->update(
                 $product_table_name,
-                ['status' => 'completed'],
-                ['id' => $product->id]
+                [ 'status' => 'completed' ],
+                [ 'id' => $product->id ]
             );
 
             return "Product Inserted Successfully";
         }
     }
 }
-add_shortcode('insert_product_api', 'product_insert_woocommerce');
+add_shortcode( 'insert_product_api', 'product_insert_woocommerce' );

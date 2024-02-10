@@ -1,8 +1,7 @@
 <?php
 
 // Create wp_sync_category Table When Plugin Activated
-function vendor_amrod_bd_table_create()
-{
+function vendor_amrod_bd_table_create() {
 
     global $wpdb;
 
@@ -21,22 +20,20 @@ function vendor_amrod_bd_table_create()
     ) $charset_collate;";
 
     require_once ABSPATH . 'wp-admin/includes/upgrade.php';
-    dbDelta($sql);
+    dbDelta( $sql );
 }
 
 // Remove wp_sync_category Table when plugin deactivated
-function vendor_amrod_bd_table_remove()
-{
+function vendor_amrod_bd_table_remove() {
     global $wpdb;
 
     $table_name = $wpdb->prefix . 'sync_products';
     $sql        = "DROP TABLE IF EXISTS $table_name;";
-    $wpdb->query($sql);
+    $wpdb->query( $sql );
 }
 
 //stock table create
-function vendor_stock_bd_table_create()
-{
+function vendor_stock_bd_table_create() {
     global $wpdb;
 
     $table_name      = $wpdb->prefix . 'sync_stocks';
@@ -54,23 +51,21 @@ function vendor_stock_bd_table_create()
     ) $charset_collate;";
 
     require_once ABSPATH . 'wp-admin/includes/upgrade.php';
-    dbDelta($sql);
+    dbDelta( $sql );
 }
 
 // Remove wp_sync_category Table when plugin deactivated
-function vendor_stock_bd_table_remove()
-{
+function vendor_stock_bd_table_remove() {
     global $wpdb;
 
     $table_name = $wpdb->prefix . 'sync_stocks';
     $sql        = "DROP TABLE IF EXISTS $table_name;";
-    $wpdb->query($sql);
+    $wpdb->query( $sql );
 }
 
 
 // create category table
-function sync_categories_table_creation()
-{
+function sync_categories_table_creation() {
     global $wpdb;
 
     // Table name
@@ -88,26 +83,24 @@ function sync_categories_table_creation()
     ) $charset_collate;";
 
     // Include WordPress upgrade file for 'dbDelta' function
-    require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+    require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
 
     // Execute 'dbDelta' to create or update the table
-    dbDelta($sql);
+    dbDelta( $sql );
 }
 
-function sync_categories_table_deletion()
-{
+function sync_categories_table_deletion() {
     global $wpdb;
 
     // Table name
     $table_name = $wpdb->prefix . 'sync_categories';
 
     // SQL query to drop the table if it exists
-    $wpdb->query("DROP TABLE IF EXISTS $table_name");
+    $wpdb->query( "DROP TABLE IF EXISTS $table_name" );
 }
 
 // create brand table
-function sync_brand_table_creation()
-{
+function sync_brand_table_creation() {
     global $wpdb;
 
     // Table name
@@ -125,29 +118,27 @@ function sync_brand_table_creation()
     ) $charset_collate;";
 
     // Include WordPress upgrade file for 'dbDelta' function
-    require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+    require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
 
     // Execute 'dbDelta' to create or update the table
-    dbDelta($sql);
+    dbDelta( $sql );
 }
 
 // remove category table
 
 // remove brand table
-function sync_brand_table_deletion()
-{
+function sync_brand_table_deletion() {
     global $wpdb;
 
     // Table name
     $table_name = $wpdb->prefix . 'sync_brands';
 
     // SQL query to drop the table if it exists
-    $wpdb->query("DROP TABLE IF EXISTS $table_name");
+    $wpdb->query( "DROP TABLE IF EXISTS $table_name" );
 }
 
 // create price table
-function sync_price_table_creation()
-{
+function sync_price_table_creation() {
     global $wpdb;
 
     // Table name
@@ -165,29 +156,27 @@ function sync_price_table_creation()
     ) $charset_collate;";
 
     // Include WordPress upgrade file for 'dbDelta' function
-    require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+    require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
 
     // Execute 'dbDelta' to create or update the table
-    dbDelta($sql);
+    dbDelta( $sql );
 }
 
 
 // remove price table
-function sync_price_table_deletion()
-{
+function sync_price_table_deletion() {
     global $wpdb;
 
     // Table name
     $table_name = $wpdb->prefix . 'sync_price';
 
     // SQL query to drop the table if it exists
-    $wpdb->query("DROP TABLE IF EXISTS $table_name");
+    $wpdb->query( "DROP TABLE IF EXISTS $table_name" );
 }
 
 
 // create price table
-function sync_branding_departments_table_create()
-{
+function sync_branding_departments_table_create() {
     global $wpdb;
 
     // Table name
@@ -205,27 +194,25 @@ function sync_branding_departments_table_create()
     ) $charset_collate;";
 
     // Include WordPress upgrade file for 'dbDelta' function
-    require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+    require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
 
     // Execute 'dbDelta' to create or update the table
-    dbDelta($sql);
+    dbDelta( $sql );
 }
 
 
 // remove price table
-function sync_branding_departments_table_remove()
-{
+function sync_branding_departments_table_remove() {
     global $wpdb;
 
     // Table name
     $table_name = $wpdb->prefix . 'sync_branding_departments';
 
     // SQL query to drop the table if it exists
-    $wpdb->query("DROP TABLE IF EXISTS $table_name");
+    $wpdb->query( "DROP TABLE IF EXISTS $table_name" );
 }
 
-function sync_branding_price_table_create()
-{
+function sync_branding_price_table_create() {
     global $wpdb;
 
     // Table name
@@ -244,21 +231,20 @@ function sync_branding_price_table_create()
     ) $charset_collate;";
 
     // Include WordPress upgrade file for 'dbDelta' function
-    require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+    require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
 
     // Execute 'dbDelta' to create or update the table
-    dbDelta($sql);
+    dbDelta( $sql );
 }
 
 
 // remove price table
-function sync_branding_price_table_remove()
-{
+function sync_branding_price_table_remove() {
     global $wpdb;
 
     // Table name
     $table_name = $wpdb->prefix . 'sync_branding_price';
 
     // SQL query to drop the table if it exists
-    $wpdb->query("DROP TABLE IF EXISTS $table_name");
+    $wpdb->query( "DROP TABLE IF EXISTS $table_name" );
 }
