@@ -81,15 +81,20 @@ function product_insert_woocommerce()
         // Remove the trailing comma and space
         $urls = rtrim($urls, ', ');
 
+        // convert $urls to array
+        $urls = explode(", ", $urls);
+
         // get price data
         $prices         = $wpdb->get_results("SELECT * FROM $price_table_name WHERE simpleCode = '$sku' LIMIT 1");
 
         // get price
-        $price = $prices[0]->price;
+        $price = $prices[0]->price ?? null;
 
         // get stock data
-        $stocks         = $wpdb->get_results("SELECT * FROM $stock_table_name  LIMIT 1");
-        die();
+        $stocks         = $wpdb->get_results("SELECT stock FROM $stock_table_name  WHERE simpleCode = '$sku' LIMIT 1");
+
+        // get stock
+        $stock = $stocks[0]->stock ?? null;
 
         // Set up the API client with WooCommerce store URL and credentials
         $client = new Client(
@@ -146,6 +151,9 @@ function product_insert_woocommerce()
 
             // update product
             $client->put('products/' . $product_id, $product_data);
+
+            return 'product already exists';
+            
         } else {
 
             // Create a new product if not exists
@@ -168,7 +176,17 @@ function product_insert_woocommerce()
             $product_id = $product->id;
 
             // Set product categories
-            wp_set_object_terms($product_id, $parent_category, 'product_cat');
+            wp_set_object_terms($product_id, $category_name, 'product_cat');
+
+            // Set category image
+            $term = get_term_by('name', $category_name, 'product_cat');
+            if ($term && !is_wp_error($term)) {
+
+                if (!empty($category_image)) {
+                    update_term_meta($term->term_id, 'thumbnail_id', attachment_url_to_postid($category_image));
+                }
+            }
+
 
             // Set product information
             wp_set_object_terms($product_id, 'simple', 'product_type');
@@ -179,15 +197,15 @@ function product_insert_woocommerce()
             update_post_meta($product_id, '_price', $price);
 
             // Update product meta data in WordPress
-            update_post_meta($product_id, '_stock', $stock_stock);
+            update_post_meta($product_id, '_stock', $stock);
 
             // display out of stock message if stock is 0
-            /* if ($stock_stock <= 0) {
+            if ($stock <= 0) {
                 update_post_meta($product_id, '_stock_status', 'outofstock');
             } else {
                 update_post_meta($product_id, '_stock_status', 'instock');
             }
-            update_post_meta($product_id, '_manage_stock', 'yes'); */
+            update_post_meta($product_id, '_manage_stock', 'yes');
 
 
             // set product gallery images
@@ -231,14 +249,14 @@ function product_insert_woocommerce()
 
                     set_post_thumbnail($product_id, $attach_id);
                 }
-
-                // Update the status of the processed product in your database
-                $wpdb->update(
-                    $product_table_name,
-                    ['status' => 'completed'],
-                    ['id' => $product->id]
-                );
             }
+
+            // Update the status of the processed product in your database
+            $wpdb->update(
+                $product_table_name,
+                ['status' => 'completed'],
+                ['id' => $product->id]
+            );
 
             return "Product Inserted Successfully";
         }

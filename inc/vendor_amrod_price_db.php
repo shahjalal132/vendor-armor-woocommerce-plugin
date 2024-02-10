@@ -41,7 +41,11 @@ function get_price_to_callback()
     // put api response to json file
     // file_put_contents($file_path, $api_response);
 
+    // get file contents
+    // $file_contents = file_get_contents($file_path);
+
     $prices       = json_decode($api_response, true);
+    // $prices       = json_decode($file_contents, true);
 
     // Insert to database
     global $wpdb;
