@@ -108,12 +108,12 @@ function product_insert_woocommerce() {
         $args = array(
             'post_type'  => 'product',
             'meta_query' => array(
-                    array(
-                        'key'     => '_sku',
-                        'value'   => $sku,
-                        'compare' => '=',
-                    ),
+                array(
+                    'key'     => '_sku',
+                    'value'   => $sku,
+                    'compare' => '=',
                 ),
+            ),
         );
 
         // Check if the product already exists
@@ -139,12 +139,12 @@ function product_insert_woocommerce() {
                 'type'        => 'simple',
                 'description' => $description,
                 'attributes'  => [
-                        [
-                            'name'      => 'Dimensions',
-                            'visible'   => true,
-                            'variation' => true,
-                        ],
+                    [
+                        'name'      => 'Dimensions',
+                        'visible'   => true,
+                        'variation' => true,
                     ],
+                ],
             ];
 
             // update product
@@ -154,6 +154,13 @@ function product_insert_woocommerce() {
 
         } else {
 
+            // Update the status of the processed product database
+            $wpdb->update(
+                $product_table_name,
+                [ 'status' => 'completed' ],
+                [ 'id' => $product->id ]
+            );
+
             // Create a new product if not exists
             $product_data = [
                 'name'        => $product_name,
@@ -161,12 +168,12 @@ function product_insert_woocommerce() {
                 'type'        => 'simple',
                 'description' => $description,
                 'attributes'  => [
-                        [
-                            'name'      => 'Dimensions',
-                            'visible'   => true,
-                            'variation' => true,
-                        ],
+                    [
+                        'name'      => 'Dimensions',
+                        'visible'   => true,
+                        'variation' => true,
                     ],
+                ],
             ];
 
             // Create the product
@@ -244,13 +251,6 @@ function product_insert_woocommerce() {
                     set_post_thumbnail( $product_id, $attach_id );
                 }
             }
-
-            // Update the status of the processed product in your database
-            $wpdb->update(
-                $product_table_name,
-                [ 'status' => 'completed' ],
-                [ 'id' => $product->id ]
-            );
 
             return "Product Inserted Successfully";
         }
