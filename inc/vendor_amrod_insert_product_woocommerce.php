@@ -55,6 +55,9 @@ function product_insert_woocommerce() {
         $maximum            = $product_data->maximum;
         $categories         = $product_data->categories;
 
+        // get branding values
+        $brandings_array = $product_data->brandings;
+
         $images = $product_data->images;
 
         // get category name and image from $categories array
@@ -294,6 +297,64 @@ function product_insert_woocommerce() {
                 update_post_meta( $product_id, '_stock_status', 'instock' );
             }
             update_post_meta( $product_id, '_manage_stock', 'yes' );
+
+            // Extract brandingName and brandingCode values
+            $brandingValues = array();
+            $brand_top_name = null;
+            foreach ( $brandings_array as $branding ) {
+
+                $brand_top_name = $branding->positionName;
+
+                /* echo '<pre>';
+                print_r( $branding );
+                die(); */
+
+                // Check if method array is set and not empty
+                if ( isset( $branding->method ) && is_array( $branding->method ) && !empty( $branding->method ) ) {
+                    // Iterate over method array
+                    foreach ( $branding->method as $method ) {
+                        // Check if brandingName and brandingCode properties are set
+                        if ( isset( $method->brandingName ) && isset( $method->brandingCode ) ) {
+                            // Store brandingName and brandingCode values
+                            $brandingValues[] = array(
+                                'brandingName' => $method->brandingName,
+                                'brandingCode' => $method->brandingCode,
+                            );
+                        }
+                    }
+                }
+            }
+
+
+            // Initialize a variable to store concatenated brand names and codes
+            $all_brand_names_codes = '';
+
+            foreach ( $brandingValues as $brandingValue ) {
+                // Concatenate brand name and code
+                $brand_name_code = $brand_top_name . " " . $brandingValue['brandingName'] . " ({$brandingValue['brandingCode']})";
+                // Concatenate with existing brand names and codes
+                $all_brand_names_codes .= $brand_name_code . ', ';
+            }
+
+            // Remove trailing comma and space
+            $all_brand_names_codes = rtrim( $all_brand_names_codes, ', ' );
+
+            // Save concatenated brand names and codes as post meta
+            update_post_meta( $product_id, '_brandingNamesCodes', $all_brand_names_codes );
+
+            // get the brand data
+            $brand_data = get_post_meta( $product_id, "_brandingNamesCodes", true );
+
+            // Set the short description
+            $short_description = "Brand Data: {$brand_data}";
+
+            // Update the product
+            $args = array(
+                'ID'           => $product_id,
+                'post_excerpt' => $short_description,
+            );
+
+            wp_update_post( $args );
 
 
             // set product gallery images
