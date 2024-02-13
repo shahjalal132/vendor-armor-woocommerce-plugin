@@ -136,7 +136,7 @@ function product_insert_woocommerce() {
             $product_data = [
                 'name'        => $product_name,
                 'sku'         => $sku,
-                'type'        => 'simple',
+                'type'        => 'variable',
                 'description' => $description,
                 'attributes'  => [
                     [
@@ -165,7 +165,7 @@ function product_insert_woocommerce() {
             $product_data = [
                 'name'        => $product_name,
                 'sku'         => $sku,
-                'type'        => 'simple',
+                'type'        => 'variable',
                 'description' => $description,
                 'attributes'  => [
                     [
@@ -194,7 +194,7 @@ function product_insert_woocommerce() {
 
 
             // Set product information
-            wp_set_object_terms( $product_id, 'simple', 'product_type' );
+            wp_set_object_terms( $product_id, 'variable', 'product_type' );
             update_post_meta( $product_id, '_visibility', 'visible' );
             update_post_meta( $product_id, '_stock_status', 'instock' );
             // update_post_meta($product_id, '_regular_price', $regular_price);
@@ -252,7 +252,7 @@ function product_insert_woocommerce() {
                 }
             }
 
-            return "<h4>Product Inserted Successfully</h4>";
+            return "<h3>Product Inserted Successfully</h3>";
         }
     }
 }
