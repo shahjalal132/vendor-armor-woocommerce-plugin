@@ -252,7 +252,7 @@ function product_insert_woocommerce() {
                 }
             }
 
-            return "Product Inserted Successfully";
+            return "<h4>Product Inserted Successfully</h4>";
         }
     }
 }
