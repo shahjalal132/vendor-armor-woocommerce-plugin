@@ -30,8 +30,8 @@ function product_insert_woocommerce() {
 
     // WooCommerce store information
     $website_url     = home_url();
-    $consumer_key    = 'ck_43fc16f5ebb0dfdde9bc2d9d5abd7615170d5b3e';
-    $consumer_secret = 'cs_2f85757eec5b1c7b482855005351e0c47bca9dcb';
+    $consumer_key    = 'ck_bc1427945d7b3443d53acff88efdab3ec33fcb11';
+    $consumer_secret = 'cs_1b0d293033f864f8e56c354f52292048f014a57a';
 
     foreach ( $products as $product ) {
 
