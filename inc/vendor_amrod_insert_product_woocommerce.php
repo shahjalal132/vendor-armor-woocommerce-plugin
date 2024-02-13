@@ -166,6 +166,34 @@ function product_insert_woocommerce() {
             // update product
             $client->put( 'products/' . $product_id, $product_data );
 
+            // Add variations
+            foreach ( explode( '|', $color ) as $color_option ) {
+                foreach ( explode( '|', $updated_sizes ) as $size_option ) {
+
+                    // Add variation data
+                    $variation_data = [
+
+                        'attributes'     => [
+                            [
+                                'name'  => 'Color',
+                                'value' => $color_option,
+                            ],
+                            [
+                                'name'  => 'Size',
+                                'value' => $size_option,
+                            ],
+                        ],
+
+                        'regular_price'  => "{$price}",
+                        'stock_quantity' => $stock,
+                    ];
+
+                    // Add variation
+                    $client->post( 'products/' . $product_id . '/variations', $variation_data );
+
+                }
+            }
+
             return 'product already exists';
 
         } else {
@@ -213,6 +241,7 @@ function product_insert_woocommerce() {
 
                     // Add variation data
                     $variation_data = [
+
                         'attributes'     => [
                             [
                                 'name'  => 'Color',
@@ -224,13 +253,9 @@ function product_insert_woocommerce() {
                             ],
                         ],
 
-                        // set variation regular price
-                        'regular_price'  => $price, 
-                        'sale_price'     => $price,
+                        'regular_price'  => "{$price}",
                         'stock_quantity' => $stock,
                     ];
-
-                    // return "ekane asce 3 and price is {$price} and stock is {$stock}";
 
                     // Add variation
                     $client->post( 'products/' . $product_id . '/variations', $variation_data );
