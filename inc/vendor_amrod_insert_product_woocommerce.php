@@ -207,6 +207,37 @@ function product_insert_woocommerce() {
             $product    = $client->post( 'products', $product_data );
             $product_id = $product->id;
 
+            // Add variations
+            foreach ( explode( '|', $color ) as $color_option ) {
+                foreach ( explode( '|', $updated_sizes ) as $size_option ) {
+
+                    // Add variation data
+                    $variation_data = [
+                        'attributes'     => [
+                            [
+                                'name'  => 'Color',
+                                'value' => $color_option,
+                            ],
+                            [
+                                'name'  => 'Size',
+                                'value' => $size_option,
+                            ],
+                        ],
+
+                        // set variation regular price
+                        'regular_price'  => $price, 
+                        'sale_price'     => $price,
+                        'stock_quantity' => $stock,
+                    ];
+
+                    // return "ekane asce 3 and price is {$price} and stock is {$stock}";
+
+                    // Add variation
+                    $client->post( 'products/' . $product_id . '/variations', $variation_data );
+
+                }
+            }
+
             // Set product categories
             wp_set_object_terms( $product_id, $category_name, 'product_cat' );
 
