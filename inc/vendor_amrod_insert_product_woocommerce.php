@@ -94,6 +94,11 @@ function product_insert_woocommerce() {
         // get stock
         $stock = $stocks[0]->stock ?? null;
 
+        $color = "Red|Green|Blue";
+        // $color = "";
+        $updated_sizes = "30|32|34|36";
+        // $updated_sizes = "";
+
         // Set up the API client with WooCommerce store URL and credentials
         $client = new Client(
             $website_url,
@@ -140,9 +145,20 @@ function product_insert_woocommerce() {
                 'description' => $description,
                 'attributes'  => [
                     [
-                        'name'      => 'Dimensions',
-                        'visible'   => true,
-                        'variation' => true,
+                        'name'        => 'Color',
+                        'options'     => explode( separator: '|', string: $color ),
+                        'position'    => 0,
+                        'visible'     => true,
+                        'variation'   => true,
+                        'is_taxonomy' => false,
+                    ],
+                    [
+                        'name'        => 'Size',
+                        'options'     => explode( separator: '|', string: $updated_sizes ),
+                        'position'    => 1,
+                        'visible'     => true,
+                        'variation'   => true,
+                        'is_taxonomy' => false,
                     ],
                 ],
             ];
@@ -169,9 +185,20 @@ function product_insert_woocommerce() {
                 'description' => $description,
                 'attributes'  => [
                     [
-                        'name'      => 'Dimensions',
-                        'visible'   => true,
-                        'variation' => true,
+                        'name'        => 'Color',
+                        'options'     => explode( separator: '|', string: $color ),
+                        'position'    => 0,
+                        'visible'     => true,
+                        'variation'   => true,
+                        'is_taxonomy' => false,
+                    ],
+                    [
+                        'name'        => 'Size',
+                        'options'     => explode( separator: '|', string: $updated_sizes ),
+                        'position'    => 1,
+                        'visible'     => true,
+                        'variation'   => true,
+                        'is_taxonomy' => false,
                     ],
                 ],
             ];
