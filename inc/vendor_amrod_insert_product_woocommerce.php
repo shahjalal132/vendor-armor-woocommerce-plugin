@@ -54,11 +54,16 @@ function product_insert_woocommerce() {
         $minimum            = $product_data->minimum;
         $maximum            = $product_data->maximum;
         $categories         = $product_data->categories;
+        $images             = $product_data->images;
 
         // get branding values
         $brandings_array = $product_data->brandings;
+        $variants        = $product_data->variants;
 
-        $images = $product_data->images;
+        $colors = null;
+        foreach ( $variants as $variant ) {
+            $colors .= $variant->codeColourName . "|";
+        }
 
         // get category name and image from $categories array
         foreach ( $categories as $category ) {
@@ -98,7 +103,8 @@ function product_insert_woocommerce() {
         $stock = $stocks[0]->stock ?? null;
 
         // $color = "Red|Green|Blue";
-        $color = "";
+        $color = $colors ?? '';
+        
         // $updated_sizes = "30|32|34|36";
         $updated_sizes = "";
 
