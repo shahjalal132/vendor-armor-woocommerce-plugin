@@ -97,10 +97,10 @@ function product_insert_woocommerce() {
         // get stock
         $stock = $stocks[0]->stock ?? null;
 
-        $color = "Red|Green|Blue";
-        // $color = "";
-        $updated_sizes = "30|32|34|36";
-        // $updated_sizes = "";
+        // $color = "Red|Green|Blue";
+        $color = "";
+        // $updated_sizes = "30|32|34|36";
+        $updated_sizes = "";
 
         // Set up the API client with WooCommerce store URL and credentials
         $client = new Client(
