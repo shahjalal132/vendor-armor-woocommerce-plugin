@@ -305,10 +305,6 @@ function product_insert_woocommerce() {
 
                 $brand_top_name = $branding->positionName;
 
-                /* echo '<pre>';
-                print_r( $branding );
-                die(); */
-
                 // Check if method array is set and not empty
                 if ( isset( $branding->method ) && is_array( $branding->method ) && !empty( $branding->method ) ) {
                     // Iterate over method array
