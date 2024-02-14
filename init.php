@@ -9,9 +9,10 @@
  * Requires PHP:      7.2
  * Author:            Imjol
  * Author URI:        https://imjol.com/
+ * text-domain:       vendorapi 
+ * Domain Path:       /languages
  * License:           GPL v2 or later
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
- * Update URI:        https://example.com/my-plugin/
  */
 
 if ( !defined( 'WPINC' ) ) {
@@ -26,6 +27,14 @@ if ( !defined( 'VENDOR_PLUGIN_PATH' ) ) {
 // Define plugin uri
 if ( !defined( 'VENDOR_PLUGIN_URI' ) ) {
     define( 'VENDOR_PLUGIN_URI', untrailingslashit( plugin_dir_url( __FILE__ ) ) );
+}
+
+/**
+ * Load the plugin textdomain for localization.
+ */
+add_action( 'plugins_loaded', 'vendorapi_load_textdomain' );
+function vendorapi_load_textdomain() {
+    load_plugin_textdomain( 'vendorapi', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
 }
 
 // Create wp_sync_products db table when plugin activate
