@@ -12,21 +12,12 @@ function product_insert_woocommerce() {
     global $wpdb;
 
     // Define table names
-    $product_table_name        = $wpdb->prefix . 'sync_products';
-    $stock_table_name          = $wpdb->prefix . 'sync_stocks';
-    $price_table_name          = $wpdb->prefix . 'sync_price';
-    $category_table_name       = $wpdb->prefix . 'sync_categories';
-    $brand_table_name          = $wpdb->prefix . 'sync_brands';
-    $branding_dp_table_name    = $wpdb->prefix . 'sync_branding_departments';
-    $branding_price_table_name = $wpdb->prefix . 'sync_branding_price';
+    $product_table_name = $wpdb->prefix . 'sync_products';
+    $stock_table_name   = $wpdb->prefix . 'sync_stocks';
+    $price_table_name   = $wpdb->prefix . 'sync_price';
 
     // Retrieve pending products from the database
     $products = $wpdb->get_results( "SELECT * FROM $product_table_name WHERE status = 'pending' LIMIT 1" );
-
-    /* $category_db       = $wpdb->get_results("SELECT * FROM $category_table_name  LIMIT 1");
-    $brand          = $wpdb->get_results("SELECT * FROM $brand_table_name  LIMIT 1");
-    $branding_db    = $wpdb->get_results("SELECT * FROM $branding_dp_table_name  LIMIT 1");
-    $branding_price = $wpdb->get_results("SELECT * FROM $branding_price_table_name  LIMIT 1"); */
 
     // WooCommerce store information
     $website_url     = home_url();
@@ -42,33 +33,37 @@ function product_insert_woocommerce() {
         $product_data = json_decode( $product_data );
 
         // Retrieve products information
-        $product_name       = $product_data->productName;
-        $product_code       = $product_data->simpleCode;
-        $sku                = $product_code;
-        $description        = $product_data->description;
-        $inventory          = $product_data->inventoryType;
-        $promotion          = $product_data->promotion;
-        $full_Brands        = $product_data->fullBrandingGuide;
-        $variants           = $product_data->variants;
-        $branding_templates = $product_data->brandingTemplates;
-        $minimum            = $product_data->minimum;
-        $maximum            = $product_data->maximum;
-        $categories         = $product_data->categories;
-        $images             = $product_data->images;
+        $product_name = $product_data->productName;
+        $product_code = $product_data->simpleCode;
+        $sku          = $product_code;
+        $description  = $product_data->description;
+        $categories   = $product_data->categories;
+        $images       = $product_data->images;
 
         // get branding values
         $brandings_array = $product_data->brandings;
         $variants        = $product_data->variants;
 
         $colors = null;
+        $sizes  = null;
         foreach ( $variants as $variant ) {
             $colors .= $variant->codeColourName . "|";
+            $sizes .= $variant->codeSize . "|";
         }
 
+        // Explode the string into an array using the delimiter '|'
+        $color_array = explode( '|', $colors );
+
+        // Remove duplicates from the array
+        $unique_color = array_unique( $color_array );
+
+        // Convert the unique values array back to a string
+        $colors = implode( '|', $unique_color );
+
+        $category_name = null;
         // get category name and image from $categories array
         foreach ( $categories as $category ) {
-            $category_name  = $category->name;
-            $category_image = $category->image;
+            $category_name = $category->name;
         }
 
         // Initialize an empty string to hold the URLs
@@ -104,7 +99,7 @@ function product_insert_woocommerce() {
 
         // $color = "Red|Green|Blue";
         $color = $colors ?? '';
-        
+
         // $updated_sizes = "30|32|34|36";
         $updated_sizes = "";
 
@@ -340,6 +335,7 @@ function product_insert_woocommerce() {
 
             // Remove trailing comma and space
             $all_brand_names_codes = rtrim( $all_brand_names_codes, ', ' );
+            $all_brand_names_codes = $all_brand_names_codes ?? '';
 
             // Save concatenated brand names and codes as post meta
             update_post_meta( $product_id, '_brandingNamesCodes', $all_brand_names_codes );
