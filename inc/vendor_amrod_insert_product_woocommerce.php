@@ -189,32 +189,27 @@ function product_insert_woocommerce() {
             $client->put( 'products/' . $product_id, $product_data );
 
             // Add variations
-            foreach ( explode( '|', $color ) as $color_option ) {
-                foreach ( explode( '|', $updated_sizes ) as $size_option ) {
 
-                    // Add variation data
-                    $variation_data = [
+            // Add variation data
+            $variation_data = [
 
-                        'attributes'     => [
-                            [
-                                'name'  => 'Color',
-                                'value' => $color_option,
-                            ],
-                            [
-                                'name'  => 'Size',
-                                'value' => $size_option,
-                            ],
-                        ],
+                'attributes'     => [
+                    [
+                        'name'  => 'Color',
+                        'value' => 'Any Color',
+                    ],
+                    [
+                        'name'  => 'Size',
+                        'value' => 'Any Size',
+                    ],
+                ],
 
-                        'regular_price'  => "{$price}",
-                        'stock_quantity' => $stock,
-                    ];
+                'regular_price'  => "{$price}",
+                'stock_quantity' => $stock,
+            ];
 
-                    // Add variation
-                    $client->post( 'products/' . $product_id . '/variations', $variation_data );
-
-                }
-            }
+            // Add variation
+            $client->post( 'products/' . $product_id . '/variations', $variation_data );
 
             return 'product already exists';
 
@@ -227,62 +222,74 @@ function product_insert_woocommerce() {
                 [ 'id' => $product->id ]
             );
 
-            // Create a new product if not exists
-            $product_data = [
-                'name'        => $product_name,
-                'sku'         => $sku,
-                'type'        => 'variable',
-                'description' => $description,
-                'attributes'  => [
-                    [
-                        'name'        => 'Color',
-                        'options'     => explode( separator: '|', string: $color ),
-                        'position'    => 0,
-                        'visible'     => true,
-                        'variation'   => true,
-                        'is_taxonomy' => false,
-                    ],
-                    [
-                        'name'        => 'Size',
-                        'options'     => explode( separator: '|', string: $updated_sizes ),
-                        'position'    => 1,
-                        'visible'     => true,
-                        'variation'   => true,
-                        'is_taxonomy' => false,
-                    ],
-                ],
-            ];
-
-            // Create the product
-            $product    = $client->post( 'products', $product_data );
-            $product_id = $product->id;
-
-            // Add variations
-            foreach ( explode( '|', $color ) as $color_option ) {
-                foreach ( explode( '|', $updated_sizes ) as $size_option ) {
-
-                    // Add variation data
-                    $variation_data = [
-
-                        'attributes'     => [
-                            [
-                                'name'  => 'Color',
-                                'value' => $color_option,
-                            ],
-                            [
-                                'name'  => 'Size',
-                                'value' => $size_option,
-                            ],
+            if ( !empty( $color ) && !empty( $updated_sizes ) ) {
+                // Create a new product if not exists
+                $product_data = [
+                    'name'        => $product_name,
+                    'sku'         => $sku,
+                    'type'        => 'variable',
+                    'description' => $description,
+                    'attributes'  => [
+                        [
+                            'name'        => 'Color',
+                            'options'     => explode( separator: '|', string: $color ),
+                            'position'    => 0,
+                            'visible'     => true,
+                            'variation'   => true,
+                            'is_taxonomy' => false,
                         ],
+                        [
+                            'name'        => 'Size',
+                            'options'     => explode( separator: '|', string: $updated_sizes ),
+                            'position'    => 1,
+                            'visible'     => true,
+                            'variation'   => true,
+                            'is_taxonomy' => false,
+                        ],
+                    ],
+                ];
 
-                        'regular_price'  => "{$price}",
-                        'stock_quantity' => $stock,
-                    ];
+                // Create the product
+                $product    = $client->post( 'products', $product_data );
+                $product_id = $product->id;
 
-                    // Add variation
-                    $client->post( 'products/' . $product_id . '/variations', $variation_data );
+                // Add variations
 
-                }
+                // Add variation data
+                $variation_data = [
+
+                    'attributes'     => [
+                        [
+                            'name'  => 'Color',
+                            'value' => 'Any Color',
+                        ],
+                        [
+                            'name'  => 'Size',
+                            'value' => 'Any Color',
+                        ],
+                    ],
+
+                    'regular_price'  => "{$price}",
+                    'stock_quantity' => $stock,
+                ];
+
+                // Add variation
+                $client->post( 'products/' . $product_id . '/variations', $variation_data );
+
+            } else {
+
+                // Create a simple product
+                $product_data = [
+                    'name'           => $product_name,
+                    'sku'            => $sku,
+                    'type'           => 'simple',
+                    'description'    => $description,
+                    'regular_price'  => "{$price}",
+                    'stock_quantity' => $stock,
+                ];
+                // Create the product
+                $product    = $client->post( 'products', $product_data );
+                $product_id = $product->id;
             }
 
             // Set product categories
@@ -299,7 +306,11 @@ function product_insert_woocommerce() {
 
 
             // Set product information
-            wp_set_object_terms( $product_id, 'variable', 'product_type' );
+            if ( !empty( $color ) && !empty( $updated_sizes ) ) {
+                wp_set_object_terms( $product_id, 'variable', 'product_type' );
+            } else {
+                wp_set_object_terms( $product_id, 'simple', 'product_type' );
+            }
             update_post_meta( $product_id, '_visibility', 'visible' );
             update_post_meta( $product_id, '_stock_status', 'instock' );
             // update_post_meta($product_id, '_regular_price', $regular_price);
