@@ -101,7 +101,7 @@ function product_insert_woocommerce() {
         $color = $colors ?? '';
 
         // $updated_sizes = "30|32|34|36";
-        $updated_sizes = "";
+        $updated_sizes = $sizes ?? '';
 
         // Set up the API client with WooCommerce store URL and credentials
         $client = new Client(
@@ -140,63 +140,6 @@ function product_insert_woocommerce() {
                 [ 'status' => 'completed' ],
                 [ 'id' => $product->id ]
             );
-
-            // Update the product  if already exists
-            $product_data = [
-                'name'        => $product_name,
-                'sku'         => $sku,
-                'type'        => 'variable',
-                'description' => $description,
-                'attributes'  => [
-                    [
-                        'name'        => 'Color',
-                        'options'     => explode( separator: '|', string: $color ),
-                        'position'    => 0,
-                        'visible'     => true,
-                        'variation'   => true,
-                        'is_taxonomy' => false,
-                    ],
-                    [
-                        'name'        => 'Size',
-                        'options'     => explode( separator: '|', string: $updated_sizes ),
-                        'position'    => 1,
-                        'visible'     => true,
-                        'variation'   => true,
-                        'is_taxonomy' => false,
-                    ],
-                ],
-            ];
-
-            // update product
-            $client->put( 'products/' . $product_id, $product_data );
-
-            // Add variations
-            foreach ( explode( '|', $color ) as $color_option ) {
-                foreach ( explode( '|', $updated_sizes ) as $size_option ) {
-
-                    // Add variation data
-                    $variation_data = [
-
-                        'attributes'     => [
-                            [
-                                'name'  => 'Color',
-                                'value' => $color_option,
-                            ],
-                            [
-                                'name'  => 'Size',
-                                'value' => $size_option,
-                            ],
-                        ],
-
-                        'regular_price'  => "{$price}",
-                        'stock_quantity' => $stock,
-                    ];
-
-                    // Add variation
-                    $client->post( 'products/' . $product_id . '/variations', $variation_data );
-
-                }
-            }
 
             return 'product already exists';
 
