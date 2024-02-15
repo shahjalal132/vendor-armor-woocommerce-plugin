@@ -46,9 +46,11 @@ function product_insert_woocommerce() {
 
         $colors = null;
         $sizes  = null;
-        foreach ( $variants as $variant ) {
-            $colors .= $variant->codeColourName . "|";
-            $sizes .= $variant->codeSize . "|";
+        if ( !empty( $variants ) && is_array( $variants ) ) {
+            foreach ( $variants as $variant ) {
+                $colors .= $variant->codeColourName . "|";
+                $sizes .= $variant->codeSize . "|";
+            }
         }
 
         // Explode the string into an array using the delimiter '|'
@@ -60,19 +62,32 @@ function product_insert_woocommerce() {
         // Convert the unique values array back to a string
         $colors = implode( '|', $unique_color );
 
+        // Explode the string into an array using the delimiter '|'
+        $size_array = explode( '|', $sizes );
+
+        // Remove duplicates from the array
+        $unique_size = array_unique( $size_array );
+
+        // Convert the unique values array back to a string
+        $sizes = implode( '|', $unique_size );
+
         $category_name = null;
-        // get category name and image from $categories array
-        foreach ( $categories as $category ) {
-            $category_name = $category->name;
+        if ( !empty( $categories ) && is_array( $categories ) ) {
+            // get category name and image from $categories array
+            foreach ( $categories as $category ) {
+                $category_name = $category->name;
+            }
         }
 
         // Initialize an empty string to hold the URLs
         $urls = '';
 
-        // Loop through the array and concatenate the URLs with comma separator
-        foreach ( $images as $object ) {
-            foreach ( $object->urls as $urlObj ) {
-                $urls .= $urlObj->url . ', ';
+        if ( !empty( $images ) && is_array( $images ) ) {
+            // Loop through the array and concatenate the URLs with comma separator
+            foreach ( $images as $object ) {
+                foreach ( $object->urls as $urlObj ) {
+                    $urls .= $urlObj->url . ', ';
+                }
             }
         }
 
@@ -81,6 +96,9 @@ function product_insert_woocommerce() {
 
         // convert $urls to array
         $urls = explode( ", ", $urls );
+
+        // set 5 image urls
+        $urls = array_slice( $urls, 0, 5 );
 
         // get price data
         $prices = $wpdb->get_results( "SELECT * FROM $price_table_name WHERE simpleCode = '$sku' LIMIT 1" );
@@ -302,21 +320,23 @@ function product_insert_woocommerce() {
             // Extract brandingName and brandingCode values
             $brandingValues = array();
             $brand_top_name = null;
-            foreach ( $brandings_array as $branding ) {
+            if ( !empty( $brandings_array ) && is_array( $brandings_array ) ) {
+                foreach ( $brandings_array as $branding ) {
 
-                $brand_top_name = $branding->positionName;
+                    $brand_top_name = $branding->positionName;
 
-                // Check if method array is set and not empty
-                if ( isset( $branding->method ) && is_array( $branding->method ) && !empty( $branding->method ) ) {
-                    // Iterate over method array
-                    foreach ( $branding->method as $method ) {
-                        // Check if brandingName and brandingCode properties are set
-                        if ( isset( $method->brandingName ) && isset( $method->brandingCode ) ) {
-                            // Store brandingName and brandingCode values
-                            $brandingValues[] = array(
-                                'brandingName' => $method->brandingName,
-                                'brandingCode' => $method->brandingCode,
-                            );
+                    // Check if method array is set and not empty
+                    if ( isset( $branding->method ) && is_array( $branding->method ) && !empty( $branding->method ) ) {
+                        // Iterate over method array
+                        foreach ( $branding->method as $method ) {
+                            // Check if brandingName and brandingCode properties are set
+                            if ( isset( $method->brandingName ) && isset( $method->brandingCode ) ) {
+                                // Store brandingName and brandingCode values
+                                $brandingValues[] = array(
+                                    'brandingName' => $method->brandingName,
+                                    'brandingCode' => $method->brandingCode,
+                                );
+                            }
                         }
                     }
                 }
@@ -326,11 +346,13 @@ function product_insert_woocommerce() {
             // Initialize a variable to store concatenated brand names and codes
             $all_brand_names_codes = '';
 
-            foreach ( $brandingValues as $brandingValue ) {
-                // Concatenate brand name and code
-                $brand_name_code = $brand_top_name . " " . $brandingValue['brandingName'] . " ({$brandingValue['brandingCode']})";
-                // Concatenate with existing brand names and codes
-                $all_brand_names_codes .= $brand_name_code . ', ';
+            if ( !empty( $brandingValues ) && is_array( $brandingValues ) ) {
+                foreach ( $brandingValues as $brandingValue ) {
+                    // Concatenate brand name and code
+                    $brand_name_code = $brand_top_name . " " . $brandingValue['brandingName'] . " ({$brandingValue['brandingCode']})";
+                    // Concatenate with existing brand names and codes
+                    $all_brand_names_codes .= $brand_name_code . ', ';
+                }
             }
 
             // Remove trailing comma and space
@@ -355,42 +377,44 @@ function product_insert_woocommerce() {
             wp_update_post( $args );
 
 
-            // set product gallery images
-            foreach ( $urls as $image_url ) {
+            if ( !empty( $urls ) && is_array( $urls ) ) {
+                // set product gallery images
+                foreach ( $urls as $image_url ) {
 
-                // Extract image name
-                $image_name = basename( $image_url );
-                // Get WordPress upload directory
-                $upload_dir = wp_upload_dir();
+                    // Extract image name
+                    $image_name = basename( $image_url );
+                    // Get WordPress upload directory
+                    $upload_dir = wp_upload_dir();
 
-                // Download the image from URL and save it to the upload directory
-                $image_data = file_get_contents( $image_url );
+                    // Download the image from URL and save it to the upload directory
+                    $image_data = file_get_contents( $image_url );
 
-                if ( $image_data !== false ) {
-                    $image_file = $upload_dir['path'] . '/' . $image_name;
-                    file_put_contents( $image_file, $image_data );
+                    if ( $image_data !== false ) {
+                        $image_file = $upload_dir['path'] . '/' . $image_name;
+                        file_put_contents( $image_file, $image_data );
 
-                    // Prepare image data to be attached to the product
-                    $file_path = $upload_dir['path'] . '/' . $image_name;
-                    $file_name = basename( $file_path );
+                        // Prepare image data to be attached to the product
+                        $file_path = $upload_dir['path'] . '/' . $image_name;
+                        $file_name = basename( $file_path );
 
-                    // Insert the image as an attachment
-                    $attachment = [
-                        'post_mime_type' => mime_content_type( $file_path ),
-                        'post_title'     => preg_replace( '/\.[^.]+$/', '', $file_name ),
-                        'post_content'   => '',
-                        'post_status'    => 'inherit',
-                    ];
+                        // Insert the image as an attachment
+                        $attachment = [
+                            'post_mime_type' => mime_content_type( $file_path ),
+                            'post_title'     => preg_replace( '/\.[^.]+$/', '', $file_name ),
+                            'post_content'   => '',
+                            'post_status'    => 'inherit',
+                        ];
 
-                    $attach_id = wp_insert_attachment( $attachment, $file_path, $product_id );
+                        $attach_id = wp_insert_attachment( $attachment, $file_path, $product_id );
 
-                    // Add the image to the product gallery
-                    $gallery_ids   = get_post_meta( $product_id, '_product_image_gallery', true );
-                    $gallery_ids   = explode( ',', $gallery_ids );
-                    $gallery_ids[] = $attach_id;
-                    update_post_meta( $product_id, '_product_image_gallery', implode( ',', $gallery_ids ) );
+                        // Add the image to the product gallery
+                        $gallery_ids   = get_post_meta( $product_id, '_product_image_gallery', true );
+                        $gallery_ids   = explode( ',', $gallery_ids );
+                        $gallery_ids[] = $attach_id;
+                        update_post_meta( $product_id, '_product_image_gallery', implode( ',', $gallery_ids ) );
 
-                    set_post_thumbnail( $product_id, $attach_id );
+                        set_post_thumbnail( $product_id, $attach_id );
+                    }
                 }
             }
 
